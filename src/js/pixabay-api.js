@@ -6,7 +6,7 @@ const searchesOptions = {
   image_type: 'photo',
   orientation: 'horizontal',
 	safesearch: true,
-	per_page: 200,
+	per_page: 15,
 	page: 1,
 };
 
