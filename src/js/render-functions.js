@@ -16,6 +16,7 @@ let totalHits = 0;
 function renderGallery(images) {
 	if (!images.hits.length) {
 		gallery.innerHTML = '';
+		loadMoreBtn.style.display = 'none';
 		setTimeout(() => {
 			iziToast.show({
 			iconUrl: iconError,

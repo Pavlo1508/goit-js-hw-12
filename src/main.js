@@ -28,22 +28,34 @@ form.addEventListener('submit', async e => {
 });
 
 async function performImageSearch() {
-	gallaryToRander.loader.style.display = 'block';
+  gallaryToRander.loader.style.display = 'block';
 
-	try {
+  try {
     const images = await pixabay.searchImages();
-		gallaryToRander.renderGallery(images);
-		gallaryToRander.loadMoreBtn.style.visibility = 'visible';
+    if (images.hits.length > 0) {
+      gallaryToRander.renderGallery(images);
+      gallaryToRander.loadMoreBtn.style.visibility = 'visible';
+    } else {
+      gallaryToRander.loadMoreBtn.style.display = 'none';
+      iziToast.show({
+        iconUrl: iconError,
+        message: 'No more images found.',
+        messageColor: '#FAFAFB',
+        backgroundColor: '#EF4040',
+        position: 'topRight',
+      });
+    }
   } catch (error) {
-		gallaryToRander.loadMoreBtn.style.display = 'none';
-		iziToast.show({
+    gallaryToRander.loadMoreBtn.style.display = 'none';
+    iziToast.show({
       iconUrl: iconError,
-      message: 'You have reached the end of search results.',
+      message: 'You have reached the end of the search results.',
       messageColor: '#FAFAFB',
       backgroundColor: '#3498db',
       position: 'topRight',
-		});;
-		gallaryToRander.loader.style.display = 'none';
+    });
+  } finally {
+    gallaryToRander.loader.style.display = 'none';
   }
 
   form.reset();
