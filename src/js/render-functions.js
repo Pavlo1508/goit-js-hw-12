@@ -9,18 +9,25 @@ const lightBox = new SimpleLightbox('.gallery-link', {
 });
 const loader = document.querySelector('.loader');
 const gallery = document.querySelector('.gallery');
+const loadMoreBtn = document.querySelector('.load-more-btn');
 loader.style.display = 'none';
+let totalHits = 0;
 
 function renderGallery(images) {
 	if (!images.hits.length) {
-		iziToast.show({
+		gallery.innerHTML = '';
+		setTimeout(() => {
+			iziToast.show({
 			iconUrl: iconError,
 			message: 'Sorry, there are no images matching your search query. Please try again!',
 			messageColor: '#FAFAFB',
       backgroundColor: '#EF4040',
-      position: 'topRight'
+			position: 'topRight'
 		})
+	}, 200)
+		
 	} else {
+		totalHits = images.totalHits;
 		const itemTemplate = images.hits.map(image =>
 			`<li class="gallery-item">
 				<a class="gallery-link" href="${image.largeImageURL}" >
@@ -47,10 +54,10 @@ function renderGallery(images) {
 			</li>`
 		).join('\n\n');
 
-		gallery.innerHTML = itemTemplate;
+		gallery.innerHTML += itemTemplate;
 		lightBox.refresh();
+		loadMoreBtn.style.display = 'block';
 	}
-
 	loader.style.display = 'none';
 };
 
@@ -58,5 +65,6 @@ export {
 	lightBox,
 	loader,
 	gallery,
+	loadMoreBtn,
 	renderGallery,
 }

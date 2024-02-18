@@ -1,24 +1,23 @@
-const API_KEY = '42379891-9b2b3e5f2dd038df1d72b79a3';
+import axios from 'axios';
+
 const searchesOptions = {
-  key: API_KEY,
+  key: '42379891-9b2b3e5f2dd038df1d72b79a3',
   q: '',
   image_type: 'photo',
   orientation: 'horizontal',
-  safesearch: true,
+	safesearch: true,
+	per_page: 15,
+	page: 1,
 };
 
-function searchImages() {
-	const url = `https://pixabay.com/api/?${new URLSearchParams(searchesOptions)}`;
-	return fetch(url).then(res => {
-		if (!res.ok) {
-			throw new Error(res.status)
-		};
-		return res.json();
-	});
+async function searchImages() {
+	const params = new URLSearchParams(searchesOptions);
+	const res = await axios.get(`https://pixabay.com/api/?${params}`);
+	return res.data;
 };
+
 
 export {
-	API_KEY,
 	searchesOptions,
 	searchImages,
 }

@@ -1,23 +1,20 @@
 import * as pixabay from './js/pixabay-api';
-import * as gallaryToRander from './js/render-functions'
+import * as gallaryToRander from './js/render-functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import iconError from './img/bi_x-octagon.png';
 export const form = document.querySelector('.search-form');
 
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async e => {
   e.preventDefault();
   const searchValue = form.elements.searchInput.value.trim();
-  if (searchValue) {
-    gallaryToRander.loader.style.display = 'block';
-    gallaryToRander.gallery.innerHTML = '';
-    pixabay.searchesOptions.q = searchValue;
-    pixabay.searchImages()
-      .then(images => gallaryToRander.renderGallery(images))
-      .catch(error => console.log(error));
-    form.reset();
-	} else {
+	if (searchValue) {
 		gallaryToRander.gallery.innerHTML = '';
+		gallaryToRander.loadMoreBtn.style.display = 'none';
+		pixabay.searchesOptions.q = searchValue;
+		pixabay.searchesOptions.page = 1;
+		await performImageSearch();
+	} else {
 		 setTimeout(() => {
       iziToast.show({
         iconUrl: iconError,
@@ -30,4 +27,43 @@ form.addEventListener('submit', e => {
 	}
 });
 
+async function performImageSearch() {
+	gallaryToRander.loader.style.display = 'block';
+
+	try {
+    const images = await pixabay.searchImages();
+		gallaryToRander.renderGallery(images);
+		gallaryToRander.loadMoreBtn.style.visibility = 'visible';
+  } catch (error) {
+		gallaryToRander.loadMoreBtn.style.display = 'none';
+		iziToast.show({
+      iconUrl: iconError,
+      message: 'You have reached the end of search results.',
+      messageColor: '#FAFAFB',
+      backgroundColor: '#3498db',
+      position: 'topRight',
+		});;
+		gallaryToRander.loader.style.display = 'none';
+  }
+
+  form.reset();
+}
+
+gallaryToRander.loadMoreBtn.addEventListener('click', async () => {
+	gallaryToRander.loadMoreBtn.style.visibility = 'hidden';
+	gallaryToRander.loader.style.position = 'fixed';
+	gallaryToRander.loader.style.bottom = '0';
+	pixabay.searchesOptions.page++;
+	await performImageSearch();
+	await scroll()
+});
+
+function scroll() {
+  const galleryItem = document.querySelector('.gallery-item');
+  const heightScroll = galleryItem.getBoundingClientRect().height * 2;
+  window.scrollBy({
+    top: heightScroll,
+    behavior: 'smooth',
+  });
+}
 
