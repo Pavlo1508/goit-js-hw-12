@@ -55,7 +55,7 @@ gallaryToRander.loadMoreBtn.addEventListener('click', async () => {
 	gallaryToRander.loader.style.bottom = '0';
 	pixabay.searchesOptions.page++;
 	await performImageSearch();
-	await scroll()
+	scroll()
 });
 
 function scroll() {
