@@ -35,10 +35,6 @@ async function performImageSearch() {
 	try {
 		const images = await pixabay.searchImages();
 		allHits += images.hits.length
-		console.log(typeof(images.hits.length));
-		console.log(allHits);
-		console.log(images);
-		console.log(images.totalHits);
 		if (images.hits.length > 0) {
 			gallaryToRander.renderGallery(images);
 			if (allHits >= images.totalHits) {
