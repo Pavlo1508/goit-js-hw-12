@@ -3,12 +3,15 @@ import * as gallaryToRander from './js/render-functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import iconError from './img/bi_x-octagon.png';
+import { all } from 'axios';
 export const form = document.querySelector('.search-form');
+let allHits = 0;
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const searchValue = form.elements.searchInput.value.trim();
 	if (searchValue) {
+		allHits = 0;
 		gallaryToRander.gallery.innerHTML = '';
 		gallaryToRander.loadMoreBtn.style.display = 'none';
 		pixabay.searchesOptions.q = searchValue;
@@ -29,12 +32,27 @@ form.addEventListener('submit', async e => {
 
 async function performImageSearch() {
   gallaryToRander.loader.style.display = 'block';
-
-  try {
-    const images = await pixabay.searchImages();
-    if (images.hits.length > 0) {
-      gallaryToRander.renderGallery(images);
-      gallaryToRander.loadMoreBtn.style.visibility = 'visible';
+	try {
+		const images = await pixabay.searchImages();
+		allHits += images.hits.length
+		console.log(typeof(images.hits.length));
+		console.log(allHits);
+		console.log(images);
+		console.log(images.totalHits);
+		if (images.hits.length > 0) {
+			gallaryToRander.renderGallery(images);
+			if (allHits >= images.totalHits) {
+				gallaryToRander.loadMoreBtn.style.visibility = 'hidden';
+				iziToast.show({
+      iconUrl: iconError,
+      message: 'You have reached the end of the search results.',
+      messageColor: '#FAFAFB',
+      backgroundColor: '#3498db',
+      position: 'topRight',
+    });
+			} else {
+				gallaryToRander.loadMoreBtn.style.visibility = 'visible';
+			}
     } else {
       gallaryToRander.loadMoreBtn.style.display = 'none';
       iziToast.show({
